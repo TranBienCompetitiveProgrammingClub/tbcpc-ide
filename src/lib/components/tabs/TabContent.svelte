@@ -13,9 +13,7 @@
         <TextBuffer
             filename={activeTab.label}
             content={activeTab.content}
-            editorState={activeTab.editorState}
             onchange={(val) => (activeTab.content = val)}
-            onsavestate={(state) => (activeTab.editorState = state)}
         />
     {:else}
         <div class="w-full h-full flex items-center justify-center">

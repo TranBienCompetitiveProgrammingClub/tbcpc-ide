@@ -9,21 +9,16 @@
     let {
         filename = "untitled.cpp",
         content = "",
-        editorState = null,
         onchange,
-        onsavestate,
     }: {
         filename?: string;
         content?: string;
-        editorState?: EditorState | null;
         onchange?: (value: string) => void;
-        onsavestate?: (state: EditorState) => void;
     } = $props();
 
     const ctx = getContext<any>("tabs");
     let fontSize = $derived(ctx.fontSize);
     let editorTheme = $derived(ctx.editorTheme);
-
     let container: HTMLDivElement;
     let view: EditorView;
     let previousId = $state<string | null>(null);
@@ -60,7 +55,6 @@
                 EditorView.updateListener.of((update) => {
                     if (update.docChanged) {
                         onchange?.(update.state.doc.toString());
-                        onsavestate?.(update.state);
                     }
                 }),
             ],
@@ -70,17 +64,17 @@
     onMount(() => {
         previousId = ctx.activeId;
         view = new EditorView({
-            state: editorState ?? createState(content, filename),
+            state: createState(content, filename),
             parent: container,
         });
     });
 
-    // only swap state when active tab changes
+    // swap state when active tab changes
     $effect(() => {
         const activeId = ctx.activeId;
         if (view && activeId !== previousId) {
             previousId = activeId;
-            view.setState(editorState ?? createState(content, filename));
+            view.setState(createState(content, filename));
         }
     });
 
@@ -104,6 +98,7 @@
         }
     });
 
+    // sync external content changes
     $effect(() => {
         const newContent = content;
         if (view && newContent !== view.state.doc.toString()) {

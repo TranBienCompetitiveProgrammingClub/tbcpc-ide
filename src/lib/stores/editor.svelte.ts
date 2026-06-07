@@ -1,12 +1,10 @@
 import { getUITheme, getEditorTheme } from "$lib/theme";
-import { EditorState } from "@codemirror/state";
 
 type Tab = {
   id: string;
   label: string;
   content: string;
   ioMode: "stdio" | "file";
-  editorState: EditorState | null;
 };
 
 let tabs = $state<Tab[]>([]);
@@ -44,7 +42,7 @@ export const editorStore = {
 
   addTab(label: string) {
     const id = crypto.randomUUID();
-    tabs.push({ id, label, content: "", ioMode: "stdio", editorState: null });
+    tabs.push({ id, label, content: "", ioMode: "stdio" });
     activeId = id;
   },
 
