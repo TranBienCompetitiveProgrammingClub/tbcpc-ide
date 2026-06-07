@@ -69,8 +69,7 @@
             >
                 <strong>Stdio</strong>
             </span>
-            <label class="toggle toggle-sm"15px
->
+            <label class="toggle toggle-sm">
                 <input
                     type="checkbox"
                     checked={activeTab.ioMode === "file"}

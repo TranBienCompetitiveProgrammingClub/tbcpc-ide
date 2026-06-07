@@ -5,9 +5,15 @@
     const ctx = getContext<any>("tabs");
     let tabs = $derived(ctx.tabs);
     let activeId = $derived(ctx.activeId);
-
     let showModal = $state(false);
     let newFileName = $state("");
+    let inputEl: HTMLInputElement;
+
+    $effect(() => {
+        if (showModal && inputEl) {
+            inputEl.focus();
+        }
+    });
 
     function confirm() {
         if (newFileName.trim()) {
@@ -32,14 +38,13 @@
             onkeydown={(e) => e.stopPropagation()}
         >
             <p class="text-sm text-base-content">File name:</p>
-            <!-- svelte-ignore a11y_autofocus -->
             <input
                 class="input input-sm bg-base-300 border-base-300 text-base-content w-full font-mono"
                 type="text"
                 placeholder="untitled.cpp"
                 bind:value={newFileName}
+                bind:this={inputEl}
                 onkeydown={(e) => e.key === "Enter" && confirm()}
-                autofocus
             />
             <div class="flex justify-end gap-2">
                 <button
