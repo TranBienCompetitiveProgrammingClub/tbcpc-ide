@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "tbcpc-ide",
+        "title": "TBCPC IDE",
         "width": 800,
         "height": 600
       }
