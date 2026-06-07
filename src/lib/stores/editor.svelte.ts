@@ -40,9 +40,9 @@ export const editorStore = {
     return outputBuffer;
   },
 
-  addTab(label: string) {
+  addTab(label: string, content: string = "") {
     const id = crypto.randomUUID();
-    tabs.push({ id, label, content: "", ioMode: "stdio" });
+    tabs.push({ id, label, content, ioMode: "stdio" });
     activeId = id;
   },
 

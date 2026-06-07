@@ -1,6 +1,8 @@
 <script lang="ts">
     import { getContext } from "svelte";
     import Tab from "./Tab.svelte";
+    import { open } from "@tauri-apps/plugin-dialog";
+    import { readTextFile } from "@tauri-apps/plugin-fs";
 
     const ctx = getContext<any>("tabs");
     let tabs = $derived(ctx.tabs);
@@ -14,6 +16,19 @@
             inputEl.focus();
         }
     });
+
+    async function openFile() {
+        const path = await open({
+            multiple: false,
+            filters: [
+                { name: "Code", extensions: ["cpp", "cc", "c", "py", "txt"] },
+            ],
+        });
+        if (!path) return;
+        const content = await readTextFile(path as string);
+        const label = (path as string).split("/").pop() ?? "untitled";
+        ctx.addTab(label, content);
+    }
 
     function confirm() {
         if (newFileName.trim()) {
@@ -62,6 +77,28 @@
 <div
     class="flex flex-row items-center h-full flex-1 overflow-x-auto overflow-y-hidden"
 >
+    <!-- Open file button -->
+    <button
+        class="px-3 h-full text-base-content/50 hover:text-base-content shrink-0 tooltip tooltip-bottom"
+        data-tip="Open file"
+        onclick={openFile}
+    >
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <path
+                d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+            ></path>
+        </svg>
+    </button>
+
     {#each tabs as tab (tab.id)}
         <Tab
             label={tab.label}
@@ -70,6 +107,7 @@
             onclose={() => ctx.removeTab(tab.id)}
         />
     {/each}
+
     <button
         class="px-3 h-full text-lg text-base-content/50 hover:text-base-content shrink-0"
         onclick={() => (showModal = true)}>+</button
