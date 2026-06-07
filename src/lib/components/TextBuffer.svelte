@@ -104,6 +104,19 @@
         }
     });
 
+    $effect(() => {
+        const newContent = content;
+        if (view && newContent !== view.state.doc.toString()) {
+            view.dispatch({
+                changes: {
+                    from: 0,
+                    to: view.state.doc.length,
+                    insert: newContent,
+                },
+            });
+        }
+    });
+
     onDestroy(() => view?.destroy());
 </script>
 

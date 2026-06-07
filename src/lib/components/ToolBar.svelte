@@ -25,6 +25,8 @@
                 code: activeTab.content,
                 input: inputBuffer,
                 language: getLanguage(activeTab.label),
+                ioMode: activeTab.ioMode,
+                filePath: activeTab.label,
             });
             ctx.setOutputBuffer(result);
         } catch (e) {
