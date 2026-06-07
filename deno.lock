@@ -14,6 +14,7 @@
     "npm:@tauri-apps/api@2": "2.11.0",
     "npm:@tauri-apps/cli@*": "2.11.2",
     "npm:@tauri-apps/cli@2": "2.11.2",
+    "npm:@tauri-apps/plugin-dialog@^2.7.1": "2.7.1",
     "npm:@tauri-apps/plugin-opener@2": "2.5.4",
     "npm:@types/node@^25.9.2": "25.9.2",
     "npm:@uiw/codemirror-theme-github@^4.25.10": "4.25.10_@codemirror+language@6.12.3_@codemirror+state@6.6.0_@codemirror+view@6.43.0",
@@ -684,6 +685,12 @@
       ],
       "bin": true
     },
+    "@tauri-apps/plugin-dialog@2.7.1": {
+      "integrity": "sha512-OK1UBXYt+ojcmxMktzzuyonYIFta8CmAASpX+CA+DTGK24KlHjhYI6x2iOJ/TjZF4N7/ACK1oFmEOjIY9IhzOQ==",
+      "dependencies": [
+        "@tauri-apps/api"
+      ]
+    },
     "@tauri-apps/plugin-opener@2.5.4": {
       "integrity": "sha512-1HnPkb+AmgO29HBazm4uPLKB+r7zzcTBW1d0fyYp1uP+jwtpoiNDGKMMzz58SFp49nOIrxdE3aUJtT57lfO9CQ==",
       "dependencies": [
@@ -1172,6 +1179,7 @@
         "npm:@tailwindcss/vite@^4.3.0",
         "npm:@tauri-apps/api@2",
         "npm:@tauri-apps/cli@2",
+        "npm:@tauri-apps/plugin-dialog@^2.7.1",
         "npm:@tauri-apps/plugin-opener@2",
         "npm:@types/node@^25.9.2",
         "npm:@uiw/codemirror-theme-github@^4.25.10",
