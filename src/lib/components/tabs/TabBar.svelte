@@ -1,12 +1,13 @@
 <script lang="ts">
     import { getContext } from "svelte";
     import Tab from "./Tab.svelte";
-    import { open } from "@tauri-apps/plugin-dialog";
-    import { readTextFile } from "@tauri-apps/plugin-fs";
+    import { open, save } from "@tauri-apps/plugin-dialog";
+    import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 
     const ctx = getContext<any>("tabs");
     let tabs = $derived(ctx.tabs);
     let activeId = $derived(ctx.activeId);
+    let activeTab = $derived(tabs.find((t: any) => t.id === activeId));
     let showModal = $state(false);
     let newFileName = $state("");
     let inputEl: HTMLInputElement;
@@ -27,7 +28,26 @@
         if (!path) return;
         const content = await readTextFile(path as string);
         const label = (path as string).split("/").pop() ?? "untitled";
-        ctx.addTab(label, content);
+        ctx.addTab(label, content, path as string);
+    }
+
+    async function saveFile() {
+        if (!activeTab) return;
+        let filePath = activeTab.filePath;
+        if (!filePath) {
+            filePath = await save({
+                defaultPath: activeTab.label,
+                filters: [
+                    {
+                        name: "Code",
+                        extensions: ["cpp", "cc", "c", "py", "txt"],
+                    },
+                ],
+            });
+            if (!filePath) return;
+            ctx.setFilePath(activeTab.id, filePath as string);
+        }
+        await writeTextFile(filePath as string, activeTab.content);
     }
 
     function confirm() {
@@ -96,6 +116,31 @@
             <path
                 d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
             ></path>
+        </svg>
+    </button>
+
+    <!-- Save file button -->
+    <button
+        class="px-3 h-full text-base-content/50 hover:text-base-content shrink-0 tooltip tooltip-bottom"
+        data-tip={activeTab?.filePath ? "Save file" : "Save as"}
+        onclick={saveFile}
+        disabled={!activeTab}
+    >
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <path
+                d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+            ></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
         </svg>
     </button>
 

@@ -5,6 +5,7 @@ type Tab = {
   label: string;
   content: string;
   ioMode: "stdio" | "file";
+  filePath: string | null;
 };
 
 let tabs = $state<Tab[]>([]);
@@ -40,9 +41,9 @@ export const editorStore = {
     return outputBuffer;
   },
 
-  addTab(label: string, content: string = "") {
+  addTab(label: string, content: string = "", filePath: string | null = null) {
     const id = crypto.randomUUID();
-    tabs.push({ id, label, content, ioMode: "stdio" });
+    tabs.push({ id, label, content, ioMode: "stdio", filePath });
     activeId = id;
   },
 
@@ -65,6 +66,10 @@ export const editorStore = {
   },
   setOutputBuffer(v: string) {
     outputBuffer = v;
+  },
+  setFilePath(id: string, path: string) {
+    const tab = tabs.find((t) => t.id === id);
+    if (tab) tab.filePath = path;
   },
   toggleTheme() {
     isDark = !isDark;
