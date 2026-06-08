@@ -5,6 +5,9 @@
     import { cpp } from "@codemirror/lang-cpp";
     import { python } from "@codemirror/lang-python";
     import type { Extension } from "@codemirror/state";
+    import { indentWithTab } from "@codemirror/commands";
+    import { keymap } from "@codemirror/view";
+    import { indentUnit } from "@codemirror/language";
 
     let {
         filename = "untitled.cpp",
@@ -52,6 +55,8 @@
                 themeCompartment.of(editorTheme),
                 getLanguage(name),
                 fontSizeCompartment.of(fontSizeTheme(fontSize)),
+                indentUnit.of("    "),
+                keymap.of([indentWithTab]),
                 EditorView.updateListener.of((update) => {
                     if (update.docChanged) {
                         onchange?.(update.state.doc.toString());
