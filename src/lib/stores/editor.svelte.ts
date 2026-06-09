@@ -14,6 +14,7 @@ let fontSize = $state(14);
 let isDark = $state(true);
 let inputBuffer = $state("");
 let outputBuffer = $state("");
+let cppVersion = $state("14");
 
 export const editorStore = {
   get tabs() {
@@ -39,6 +40,12 @@ export const editorStore = {
   },
   get outputBuffer() {
     return outputBuffer;
+  },
+  get cppVersion() {
+    return cppVersion;
+  },
+  setCppVersion(v: string) {
+    cppVersion = v;
   },
 
   addTab(label: string, content: string = "", filePath: string | null = null) {

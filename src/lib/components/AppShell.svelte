@@ -68,6 +68,7 @@
                 language: getLanguage(activeTab.label),
                 ioMode: activeTab.ioMode,
                 filePath: activeTab.filePath ?? activeTab.label,
+                cppVersion: ctx.cppVersion,
             });
             ctx.setOutputBuffer(result);
         } catch (e) {

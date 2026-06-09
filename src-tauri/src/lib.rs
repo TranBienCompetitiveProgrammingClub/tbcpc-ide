@@ -9,6 +9,7 @@ fn run_code(
     language: String,
     io_mode: String,
     file_path: String,
+    cpp_version: String,
 ) -> Result<String, String> {
     let ext = match language.as_str() {
         "python" => "py",
@@ -21,13 +22,15 @@ fn run_code(
 
     std::fs::write(&src_path, &code).map_err(|e| e.to_string())?;
 
+    let std_flag = format!("-std=c++{}", cpp_version);
+
     if ext == "cpp" {
         let compile = Command::new("g++")
             .args([
                 src_path.to_str().unwrap(),
                 "-o",
                 bin_path.to_str().unwrap(),
-                "-std=c++17",
+                &std_flag,
             ])
             .output()
             .map_err(|e| e.to_string())?;

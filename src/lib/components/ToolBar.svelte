@@ -9,8 +9,12 @@
     let tabs = $derived(ctx.tabs);
     let activeId = $derived(ctx.activeId);
     let activeTab = $derived(tabs.find((t: any) => t.id === activeId));
-    let inputBuffer = $derived(ctx.inputBuffer);
     let running = $state(false);
+    let cppVersion = $derived(ctx.cppVersion);
+
+    let cppDropdownOpen = $state(false);
+
+    const cppVersions = ["98", "03", "11", "14", "17", "20"];
 
     function getLanguage(filename: string): string {
         if (filename.endsWith(".py")) return "python";
@@ -51,6 +55,47 @@
 
     <div class="w-2"></div>
 
+    <!-- C++ version dropdown -->
+    <details
+        class="dropdown dropdown-bottom dropdown-end"
+        bind:open={cppDropdownOpen}
+    >
+        <summary class="btn btn-sm btn-ghost font-mono">
+            C++{cppVersion}
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-3 w-3"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </summary>
+        <ul
+            class="menu dropdown-content bg-base-200 border border-base-300 rounded-box z-50 p-1 shadow-lg"
+        >
+            {#each cppVersions as v}
+                <li>
+                    <a
+                        class="font-mono text-sm {cppVersion === v
+                            ? 'active'
+                            : ''}"
+                        onclick={() => {
+                            ctx.setCppVersion(v);
+                            cppDropdownOpen = false;
+                        }}
+                    >
+                        C++{v}
+                    </a>
+                </li>
+            {/each}
+        </ul>
+    </details>
+
+    <div class="w-2"></div>
+
     <!-- IO mode toggle -->
     {#if activeTab}
         <div class="flex flex-row items-center gap-2">
@@ -59,7 +104,7 @@
                     ? 'text-base-content'
                     : 'text-base-content/40'}"
             >
-                <strong>Stdio</strong>
+                <strong>stdio</strong>
             </span>
             <label class="toggle toggle-sm">
                 <input
@@ -75,7 +120,7 @@
                     ? 'text-base-content'
                     : 'text-base-content/40'}"
             >
-                <strong>File</strong>
+                <strong>file</strong>
             </span>
         </div>
     {/if}
