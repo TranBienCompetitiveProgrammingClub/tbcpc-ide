@@ -7,7 +7,7 @@
     import type { Extension } from "@codemirror/state";
     import { indentWithTab } from "@codemirror/commands";
     import { keymap } from "@codemirror/view";
-    import { indentUnit } from "@codemirror/language";
+    import { indentOnInput, indentUnit } from "@codemirror/language";
 
     let {
         filename = "untitled.cpp",
@@ -52,7 +52,7 @@
         return EditorState.create({
             doc,
             extensions: [
-                basicSetup,
+                basicSetup({ indentOnInput: false }),
                 themeCompartment.of(editorTheme),
                 getLanguage(name),
                 fontSizeCompartment.of(fontSizeTheme(fontSize)),
