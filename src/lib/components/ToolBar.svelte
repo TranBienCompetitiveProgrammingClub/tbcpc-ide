@@ -3,6 +3,7 @@
     import { invoke } from "@tauri-apps/api/core";
 
     const ctx = getContext<any>("tabs");
+    const actions = getContext<any>("actions");
     let fontSize = $derived(ctx.fontSize);
     let isDark = $derived(ctx.isDark);
     let tabs = $derived(ctx.tabs);
@@ -20,16 +21,7 @@
         if (!activeTab || running) return;
         running = true;
         try {
-            const result = await invoke<string>("run_code", {
-                code: activeTab.content,
-                input: inputBuffer,
-                language: getLanguage(activeTab.label),
-                ioMode: activeTab.ioMode,
-                filePath: activeTab.label,
-            });
-            ctx.setOutputBuffer(result);
-        } catch (e) {
-            ctx.setOutputBuffer(String(e));
+            await actions.runCode();
         } finally {
             running = false;
         }

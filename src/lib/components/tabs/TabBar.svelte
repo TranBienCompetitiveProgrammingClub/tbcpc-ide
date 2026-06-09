@@ -1,16 +1,21 @@
 <script lang="ts">
-    import { getContext } from "svelte";
+    import { getContext, onMount } from "svelte";
     import Tab from "./Tab.svelte";
     import { open, save } from "@tauri-apps/plugin-dialog";
     import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 
     const ctx = getContext<any>("tabs");
+    const actions = getContext<any>("actions");
     let tabs = $derived(ctx.tabs);
     let activeId = $derived(ctx.activeId);
     let activeTab = $derived(tabs.find((t: any) => t.id === activeId));
     let showModal = $state(false);
     let newFileName = $state("");
     let inputEl: HTMLInputElement;
+
+    onMount(() => {
+        actions.setShowNewFileModal(() => (showModal = true));
+    });
 
     $effect(() => {
         if (showModal && inputEl) {

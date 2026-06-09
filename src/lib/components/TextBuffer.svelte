@@ -20,6 +20,7 @@
     } = $props();
 
     const ctx = getContext<any>("tabs");
+    const actions = getContext<any>("actions");
     let fontSize = $derived(ctx.fontSize);
     let editorTheme = $derived(ctx.editorTheme);
     let container: HTMLDivElement;
@@ -57,6 +58,7 @@
                 fontSizeCompartment.of(fontSizeTheme(fontSize)),
                 indentUnit.of("    "),
                 keymap.of([indentWithTab]),
+                actions.editorKeybinds,
                 EditorView.updateListener.of((update) => {
                     if (update.docChanged) {
                         onchange?.(update.state.doc.toString());
