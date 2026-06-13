@@ -1,10 +1,8 @@
 name: Release Standalone Binaries
-
 on:
   push:
     tags:
       - "v*"
-
 jobs:
   build-and-release:
     permissions:
@@ -15,19 +13,41 @@ jobs:
         include:
           - os: ubuntu-22.04
             platform-name: linux
+            target: x86_64-unknown-linux-gnu
             binary-path: src-tauri/target/release/tbcpc-ide
-            output-name: tbcpc-ide-linux
+            output-name: tbcpc-ide-linux-x86_64
+
+          - os: ubuntu-22.04
+            platform-name: linux-arm64
+            target: aarch64-unknown-linux-gnu
+            binary-path: src-tauri/target/aarch64-unknown-linux-gnu/release/tbcpc-ide
+            output-name: tbcpc-ide-linux-arm64
+
           - os: windows-latest
             platform-name: windows
+            target: x86_64-pc-windows-msvc
             binary-path: src-tauri/target/release/tbcpc-ide.exe
-            output-name: tbcpc-ide-windows.exe
+            output-name: tbcpc-ide-windows-x86_64.exe
+
+          - os: windows-latest
+            platform-name: windows-arm64
+            target: aarch64-pc-windows-msvc
+            binary-path: src-tauri/target/aarch64-pc-windows-msvc/release/tbcpc-ide.exe
+            output-name: tbcpc-ide-windows-arm64.exe
+
           - os: macos-latest
             platform-name: macos
+            target: x86_64-apple-darwin
             binary-path: src-tauri/target/release/tbcpc-ide
-            output-name: tbcpc-ide-macos
+            output-name: tbcpc-ide-macos-x86_64
+
+          - os: macos-latest
+            platform-name: macos-arm64
+            target: aarch64-apple-darwin
+            binary-path: src-tauri/target/aarch64-apple-darwin/release/tbcpc-ide
+            output-name: tbcpc-ide-macos-arm64
 
     runs-on: ${{ matrix.os }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -39,14 +59,16 @@ jobs:
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
 
       - name: Rust Cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: src-tauri -> target
 
-      - name: Install Linux dependencies
-        if: matrix.os == 'ubuntu-22.04'
+      - name: Install Linux x86_64 dependencies
+        if: matrix.platform-name == 'linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -56,6 +78,25 @@ jobs:
             librsvg2-dev \
             patchelf
 
+      - name: Install Linux arm64 dependencies
+        if: matrix.platform-name == 'linux-arm64'
+        run: |
+          sudo apt-get update
+          sudo dpkg --add-architecture arm64
+          sudo bash -c 'cat > /etc/apt/sources.list.d/arm64.list <<EOF
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy main restricted
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-security main restricted
+          EOF'
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc-aarch64-linux-gnu \
+            libgtk-3-dev:arm64 \
+            libwebkit2gtk-4.1-dev:arm64 \
+            libappindicator3-dev:arm64 \
+            librsvg2-dev:arm64 \
+            patchelf
+
       - name: Install Frontend Dependencies
         run: deno install
 
@@ -63,7 +104,10 @@ jobs:
         run: deno task build
 
       - name: Build Tauri Standalone Binary
-        run: deno run -A npm:@tauri-apps/cli build --no-bundle
+        run: deno run -A npm:@tauri-apps/cli build --no-bundle --target ${{ matrix.target }}
+        env:
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+          PKG_CONFIG_SYSROOT_DIR: ${{ matrix.platform-name == 'linux-arm64' && '/usr/lib/aarch64-linux-gnu' || '' }}
 
       - name: Prepare Binary Artifact
         shell: bash
