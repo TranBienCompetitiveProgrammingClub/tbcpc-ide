@@ -52,7 +52,7 @@
         return EditorState.create({
             doc,
             extensions: [
-                basicSetup({ indentOnInput: false }),
+                basicSetup,
                 themeCompartment.of(editorTheme),
                 getLanguage(name),
                 fontSizeCompartment.of(fontSizeTheme(fontSize)),
